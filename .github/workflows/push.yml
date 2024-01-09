@@ -1,0 +1,113 @@
+name: "Push"
+on:
+  push:
+    branches:
+      - main
+  pull_request:
+    types:
+      - opened
+      - synchronize
+      - reopened
+
+jobs:
+  build:
+    name: "Build"
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v3
+
+      - uses: actions/setup-go@v4
+        with:
+          go-version-file: 'go.mod'
+
+      - name: apt install
+        run: sudo apt install -y fuse3 libsqlite3-dev
+
+      - name: Build binaries
+        run: go install ./cmd/...
+
+  unit:
+    name: "Unit Tests"
+    runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        journal_mode: [delete, persist, truncate, wal]
+    steps:
+      - uses: actions/checkout@v3
+
+      - uses: actions/setup-go@v4
+        with:
+          go-version-file: 'go.mod'
+
+      - name: apt install
+        run: sudo apt install -y fuse3 libsqlite3-dev consul
+
+      - name: check fuse version
+        run: fusermount -V
+
+      - name: Run unit tests
+        run: go test -v . ./internal/...
+
+      - name: Run FUSE tests
+        run: go test -v -p 1 -timeout 5m ./fuse -long -journal-mode ${{ matrix.journal_mode }}
+        timeout-minutes: 5
+
+      - name: Start consul in dev mode
+        run: consul agent -dev &
+
+      - name: Run cmd tests
+        run: go test -v -p 1 -timeout 5m ./cmd/litefs -journal-mode ${{ matrix.journal_mode }}
+        timeout-minutes: 5
+
+  functional:
+    name: "Functional Tests"
+    runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        journal_mode: [delete, persist, truncate, wal]
+    steps:
+      - uses: actions/checkout@v3
+
+      - uses: actions/setup-go@v4
+        with:
+          go-version-file: 'go.mod'
+
+      - name: apt install
+        run: sudo apt install -y fuse3 libsqlite3-dev consul
+
+      - name: Start consul in dev mode
+        run: consul agent -dev &
+
+      - name: Run functional tests
+        run: go test -v -p 1 -run=TestFunctional_OK ./cmd/litefs -funtime 30s -journal-mode ${{ matrix.journal_mode }}
+        timeout-minutes: 10
+
+  staticcheck:
+    name: "Staticcheck"
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v3
+
+      - uses: actions/setup-go@v4
+        with:
+          go-version-file: 'go.mod'
+
+      - uses: dominikh/staticcheck-action@v1.2.0
+        with:
+          install-go: false
+
+  errcheck:
+    name: "Errcheck"
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v3
+
+      - uses: actions/setup-go@v4
+        with:
+          go-version-file: 'go.mod'
+
+      - run: go install github.com/kisielk/errcheck@latest
+
+      - run: errcheck ./...

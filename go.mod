@@ -1,15 +1,20 @@
 module github.com/superfly/litefs
 
-go 1.18
+go 1.21
 
 require (
-	github.com/hanwen/go-fuse/v2 v2.1.1-0.20220627082937-d01fda7edf17
+	bazil.org/fuse v0.0.0-20230120002735-62a210ff1fd5
 	github.com/hashicorp/consul/api v1.11.0
 	github.com/mattn/go-shellwords v1.0.12
-	github.com/mattn/go-sqlite3 v1.14.12
-	github.com/prometheus/client_golang v1.12.2
-	github.com/superfly/ltx v0.0.0-20220701210039-d37520857bc3
-	golang.org/x/sync v0.0.0-20210220032951-036812b2e83c
+	github.com/mattn/go-sqlite3 v1.14.16-0.20220918133448-90900be5db1a
+	github.com/prometheus/client_golang v1.13.0
+	github.com/superfly/litefs-go v0.0.0-20230227231337-34ea5dcf1e0b
+	github.com/superfly/ltx v0.3.13
+	golang.org/x/exp v0.0.0-20230515195305-f3d0a9c9a5cc
+	golang.org/x/net v0.17.0
+	golang.org/x/sync v0.4.0
+	golang.org/x/sys v0.13.0
+	gopkg.in/natefinch/lumberjack.v2 v2.0.0
 	gopkg.in/yaml.v3 v3.0.1
 )
 
@@ -19,7 +24,6 @@ require (
 	github.com/cespare/xxhash/v2 v2.1.2 // indirect
 	github.com/fatih/color v1.9.0 // indirect
 	github.com/golang/protobuf v1.5.2 // indirect
-	github.com/google/go-cmp v0.5.7 // indirect
 	github.com/hashicorp/go-cleanhttp v0.5.1 // indirect
 	github.com/hashicorp/go-hclog v0.14.1 // indirect
 	github.com/hashicorp/go-immutable-radix v1.3.0 // indirect
@@ -37,13 +41,16 @@ require (
 	github.com/mitchellh/go-homedir v1.1.0 // indirect
 	github.com/mitchellh/go-testing-interface v1.14.0 // indirect
 	github.com/mitchellh/mapstructure v1.4.1 // indirect
+	github.com/pierrec/lz4/v4 v4.1.17 // indirect
 	github.com/prometheus/client_model v0.2.0 // indirect
-	github.com/prometheus/common v0.32.1 // indirect
-	github.com/prometheus/procfs v0.7.3 // indirect
+	github.com/prometheus/common v0.37.0 // indirect
+	github.com/prometheus/procfs v0.8.0 // indirect
 	github.com/stretchr/testify v1.7.0 // indirect
-	golang.org/x/net v0.0.0-20220127200216-cd36cc0744dd // indirect
-	golang.org/x/sys v0.0.0-20220412211240-33da011f77ad // indirect
-	google.golang.org/protobuf v1.26.0 // indirect
+	golang.org/x/text v0.13.0 // indirect
+	google.golang.org/protobuf v1.28.1 // indirect
 )
 
-replace github.com/mattn/go-sqlite3 => github.com/benbjohnson/go-sqlite3 v0.0.0-20220723145740-eed275a583e0
+// replace github.com/superfly/litefs-go => ../litefs-go
+// replace github.com/mattn/go-sqlite3 => ../../mattn/go-sqlite3
+// replace github.com/pierrec/lz4/v4 => ../../pierrec/lz4
+// replace github.com/superfly/ltx => ../ltx
